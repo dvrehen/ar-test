@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10151e">
+    <title>Wrapper — WebXR projection demo</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module" src="./src/main.js"></script>
+  </head>
+  <body>
+    <main class="app">
+      <section class="scene" aria-label="Interactive 3D preview">
+        <canvas id="scene" aria-label="Floating 3D objects. Click an object for an extra animation."></canvas>
+        <div class="scene-label"><span class="status-dot"></span> WEBXR · IMAGE TRACKING</div>
+        <button class="pulse-button" id="pulse" type="button" aria-label="Play extra animation">
+          <span aria-hidden="true">✦</span>
+        </button>
+      </section>
+
+      <section class="panel">
+        <div class="eyebrow">A SMALL WEBXR EXPERIMENT</div>
+        <h1>Bring the<br><span>wrapper</span> to life.</h1>
+        <p class="intro">Point your camera at the wrapper image and watch a little world take shape above it.</p>
+
+        <label class="upload" for="target-image">
+          <span class="upload-icon" aria-hidden="true">＋</span>
+          <span class="upload-copy">
+            <strong id="file-name">Choose the wrapper image</strong>
+            <small>Use the same image you want to track in AR</small>
+          </span>
+          <span class="upload-arrow" aria-hidden="true">↗</span>
+          <input id="target-image" type="file" accept="image/*">
+        </label>
+
+        <label class="target-width" for="target-width">
+          <span>Printed image width <small>Measure the image for accurate AR scale</small></span>
+          <span class="width-input"><input id="target-width" type="number" min="3" max="100" step="1" value="18" inputmode="decimal" required><span>cm</span></span>
+        </label>
+
+        <button class="launch" id="launch" type="button" disabled>
+          <span id="launch-label">Choose an image to begin</span>
+          <span aria-hidden="true">→</span>
+        </button>
+        <p class="message" id="message" role="status" aria-live="polite">
+          For image tracking, use a WebXR-compatible Android browser over HTTPS. On GitHub Pages, HTTPS is enabled automatically.
+        </p>
+
+        <div class="instructions">
+          <span class="step">01</span><span>Select your wrapper image</span>
+          <span class="step">02</span><span>Start AR and scan the printed image</span>
+          <span class="step">03</span><span>Tap the scene for a surprise</span>
+        </div>
+        <div class="credit">MADE WITH THREE.JS + NATIVE WEBXR</div>
+      </section>
+    </main>
+  </body>
+</html>
