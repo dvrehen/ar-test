@@ -1,6 +1,6 @@
 # Wrapper WebXR demo
 
-A static Three.js and native WebXR image-tracking demo. Select the wrapper image, enter its printed width, open the site on a compatible WebXR device, and scan the same image to place the floating objects. Tap the scene (or a visible object in the desktop preview) for an extra burst animation.
+A static Three.js and native WebXR image-tracking demo. The uploaded wrapper photo is included and selected by default. Enter the printed width, open the site on a compatible WebXR device, and scan the same image to place the floating objects. You can choose a different image if desired. Tap the scene (or a visible object in the desktop preview) for an extra burst animation.
 
 ## Run locally
 
@@ -14,7 +14,7 @@ Then open <http://localhost:8000>. The page loads Three.js from jsDelivr, so an 
 
 ## Publish with GitHub Pages
 
-The workflow in `.github/workflows/pages.yml` deploys the root of `main` on each push. In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. GitHub Pages provides HTTPS, which is required by WebXR.
+The workflow in `.github/workflows/pages.yml` deploys the app and included wrapper image on each push to `main`. In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. GitHub Pages provides HTTPS, which is required by WebXR.
 
 ## Device support
 

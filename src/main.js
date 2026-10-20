@@ -96,8 +96,6 @@ for (let index = 0; index < 12; index += 1) {
   burst.add(particle);
 }
 
-let targetImage = null;
-let targetUrl = null;
 let targetBitmap = null;
 let trackingMessage = "";
 let lastTrackingMessage = "";
@@ -122,6 +120,34 @@ resize();
 
 function setMessage(text) {
   message.textContent = text;
+}
+
+async function loadTargetImage(blob, name) {
+  const bitmap = await createImageBitmap(blob);
+  const texture = new THREE.Texture(bitmap);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+
+  targetBitmap?.close();
+  targetBitmap = bitmap;
+  const aspect = bitmap.width / bitmap.height;
+  imageSurface.geometry.dispose();
+  imageSurface.geometry = new THREE.PlaneGeometry(0.72, 0.72 / aspect);
+  imageSurface.material.map?.dispose();
+  imageSurface.material.map = texture;
+  imageSurface.material.color.set(0xffffff);
+  imageSurface.material.needsUpdate = true;
+  fileName.textContent = name;
+
+  if (navigator.xr && await navigator.xr.isSessionSupported("immersive-ar")) {
+    launchButton.disabled = false;
+    launchLabel.textContent = "View in your space";
+    setMessage("Wrapper image ready. Start AR, then slowly move your camera over the printed image.");
+  } else {
+    launchButton.disabled = true;
+    launchLabel.textContent = "AR is not available in this browser";
+    setMessage("The image is ready, but immersive AR with image tracking needs a compatible WebXR browser and device.");
+  }
 }
 
 function setTrackingMessage(text) {
@@ -236,43 +262,30 @@ imageInput.addEventListener("change", async () => {
   }
 
   try {
-    const bitmap = await createImageBitmap(file);
-    const url = URL.createObjectURL(file);
-    const texture = new THREE.Texture(bitmap);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.needsUpdate = true;
-
-    if (targetUrl) URL.revokeObjectURL(targetUrl);
-    targetBitmap?.close();
-    targetUrl = url;
-    targetBitmap = bitmap;
-    targetImage = file;
-    const aspect = bitmap.width / bitmap.height;
-    imageSurface.geometry.dispose();
-    imageSurface.geometry = new THREE.PlaneGeometry(0.72, 0.72 / aspect);
-    imageSurface.material.map?.dispose();
-    imageSurface.material.map = texture;
-    imageSurface.material.color.set(0xffffff);
-    imageSurface.material.needsUpdate = true;
-    fileName.textContent = file.name;
-
-    if (navigator.xr && await navigator.xr.isSessionSupported("immersive-ar")) {
-      launchButton.disabled = false;
-      launchLabel.textContent = "View in your space";
-      setMessage("Image ready. Start AR, then slowly move your camera over the wrapper.");
-    } else {
-      launchButton.disabled = true;
-      launchLabel.textContent = "AR is not available in this browser";
-      setMessage("The image is ready, but immersive AR with image tracking needs a compatible WebXR browser and device.");
-    }
+    await loadTargetImage(file, file.name);
   } catch (error) {
     setMessage(`Could not load that image: ${error.message}`);
   }
 });
 
+async function loadIncludedImage() {
+  try {
+    const response = await fetch("./20261020_152511.jpg");
+    if (!response.ok) throw new Error(`Image request failed (${response.status})`);
+    await loadTargetImage(await response.blob(), "20261020_152511.jpg · included");
+  } catch (error) {
+    launchButton.disabled = true;
+    launchLabel.textContent = "Choose an image to begin";
+    fileName.textContent = "Choose the wrapper image";
+    setMessage(`Could not load the included wrapper image: ${error.message}. You can select an image above.`);
+  }
+}
+
+loadIncludedImage();
+
 launchButton.addEventListener("click", async () => {
-  if (!targetImage || !targetBitmap) {
-    setMessage("Choose the wrapper image before starting AR.");
+  if (!targetBitmap) {
+    setMessage("Wait for the wrapper image to load or select an image before starting AR.");
     return;
   }
   if (!widthInput.reportValidity()) return;
@@ -297,6 +310,5 @@ launchButton.addEventListener("click", async () => {
 
 window.addEventListener("pagehide", () => {
   resizeObserver.disconnect();
-  if (targetUrl) URL.revokeObjectURL(targetUrl);
   targetBitmap?.close();
 });

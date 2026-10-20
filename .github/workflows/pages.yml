@@ -29,5 +29,6 @@ jobs:
             index.html
             styles.css
             src/
+            20261020_152511.jpg
       - id: deployment
         uses: actions/deploy-pages@v4
